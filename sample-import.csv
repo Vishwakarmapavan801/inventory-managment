@@ -1,0 +1,4 @@
+product_name,sku,size,color,price,stock_quantity
+T-shirt,TSHIRT-S-RED,S,Red,19.99,50
+T-shirt,TSHIRT-M-BLUE,M,Blue,19.99,20
+Jeans,JEANS-L-BLACK,L,Black,49.99,5

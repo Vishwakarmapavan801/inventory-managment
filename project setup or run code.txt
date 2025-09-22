@@ -1,0 +1,276 @@
+PROJECT SETUP & RUN GUIDE
+
+
+Project: Inventory Management API
+Tech Stack: Node.js, Express, MySQL, Fast-CSV
+Author: Pavan Vishwakarma
+
+ 
+
+1. Prerequisites
+     -
+- Node.js (v18 or above) installed
+- MySQL installed and running
+- Postman or Thunder Client (optional) for testing APIs
+- Terminal / Command Prompt access
+
+ 
+
+2. Clone the Project
+     
+Open terminal and run:
+
+git clone <your-repo-url>
+cd inventory-management
+
+ 
+
+3. Install Dependencies
+      
+Run the following command inside the project folder:
+
+npm install
+
+This will install all required packages listed in package.json:
+- express
+- express-fileupload
+- mysql2
+- fast-csv
+
+ 
+
+4. Setup MySQL Database
+       -
+Login to MySQL and run the following SQL commands:
+
+CREATE DATABASE IF NOT EXISTS inventory_db;
+
+USE inventory_db;
+
+CREATE TABLE IF NOT EXISTS products (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) UNIQUE NOT NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS variants (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL,
+  sku VARCHAR(50) UNIQUE NOT NULL,
+  size VARCHAR(10),
+  color VARCHAR(20),
+  price DECIMAL(10,2) NOT NULL,
+  stock_quantity INT NOT NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+ 
+
+5. Configure Database Credentials
+           
+Open `routes/inventory.js` and update MySQL credentials if required:
+
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "Admin",       // Replace with your MySQL password
+  database: "inventory_db"
+});
+
+ 
+
+6. Start the Server
+      
+In terminal, run:
+
+npm start
+
+Server will start on:
+http://localhost:5000
+
+You should see:
+
+ Server running on port 5000
+ Database & tables initialized
+
+ 
+
+7. API Endpoints
+     -
+Root Test:
+GET /api/inventory/
+Response: { "message": " Inventory API is working!" }
+
+Add Product:
+POST /api/inventory/products
+Body example:
+{
+  "name": "T-Shirt",
+  "variants": [
+    { "sku": "TS-001", "size": "M", "color": "Red", "price": 499.99, "stock_quantity": 50 },
+    { "sku": "TS-002", "size": "L", "color": "Blue", "price": 499.99, "stock_quantity": 30 }
+  ]
+}
+
+Get All Products:
+GET /api/inventory/products
+
+Update Variant Stock:
+PUT /api/inventory/variants/:id/stock
+Body example:
+{ "stock_quantity": 25 }
+
+Delete Product:
+DELETE /api/inventory/products/:id
+
+Import CSV:
+POST /api/inventory/import
+- Key: csvFile (multipart/form-data)
+- CSV columns: product_name, sku, size, color, price, stock_quantity
+
+Export CSV:
+GET /api/inventory/export
+
+ 
+
+8. Notes
+ 
+- Ensure MySQL service is running before starting the server.
+- Server logs will show any errors in terminal.
+- CSV import/export is optional for testing bulk data.
+- All project files are located in the `src/` folder.
+
+ 
+
+
+
+
+http://localhost:5000/api/inventory
+
+
+
+
+
+
+
+
+
+
+GET /api/inventory → Test API
+
+GET /api/inventory/products → Get all products
+
+POST /api/inventory/products → Add product + variants
+
+PUT /api/inventory/variants/:id/stock → Update stock
+
+DELETE /api/inventory/products/:id → Delete product
+
+POST /api/inventory/import → Import CSV
+
+GET /api/inventory/export → Export CSV
+
+
+
+
+
+
+
+
+
+
+
+
+
+End of Guide
+
+
+
+
+
+
+
+
+
+
+Inventory Management API – Thunder Client Commands
+
+ 
+1. API Test (server check)
+GET http://localhost:5000/api/inventory
+
+ 
+2. Get All Products + Variants
+GET http://localhost:5000/api/inventory/products
+
+ 
+3. Add New Product with Variants
+POST http://localhost:5000/api/inventory/products
+Content-Type: application/json
+
+{
+  "name": "T-Shirt",
+  "variants": [
+    {
+      "sku": "TSHIRT-BLK-M",
+      "size": "M",
+      "color": "Black",
+      "price": 499,
+      "stock_quantity": 20
+    },
+    {
+      "sku": "TSHIRT-BLK-L",
+      "size": "L",
+      "color": "Black",
+      "price": 549,
+      "stock_quantity": 15
+    }
+  ]
+}
+
+ 
+4. Update Stock of a Variant
+PUT http://localhost:5000/api/inventory/variants/1/stock
+Content-Type: application/json
+
+{
+  "stock_quantity": 50
+}
+
+(Note: Replace 1 with the actual variant id)
+
+ 
+5. Delete a Product
+DELETE http://localhost:5000/api/inventory/products/1
+
+(Note: Replace 1 with the actual product id)
+
+ 
+6. Import Products from CSV
+POST http://localhost:5000/api/inventory/import
+
+Body -> form-data
+Key: csvFile (Type = File)
+Value: products.csv
+
+CSV Example (products.csv):
+product_name,sku,size,color,price,stock_quantity
+T-Shirt,TSHIRT-BLK-M,M,Black,499,20
+T-Shirt,TSHIRT-BLK-L,L,Black,549,15
+
+ 
+7. Export Products to CSV
+GET http://localhost:5000/api/inventory/export
+
+(This will download inventory_export.csv)
+
+ 
+Quick Summary
+1. GET /api/inventory -> Test API
+2. GET /api/inventory/products -> Fetch all products
+3. POST /api/inventory/products -> Add product + variants
+4. PUT /api/inventory/variants/:id/stock -> Update stock
+5. DELETE /api/inventory/products/:id -> Delete product
+6. POST /api/inventory/import -> Import from CSV
+7. GET /api/inventory/export -> Export to CSV
